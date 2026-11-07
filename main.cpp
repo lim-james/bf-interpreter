@@ -4,10 +4,10 @@
 #include <vector>
 #include <cstddef>
 #include <cstdint>
-#include <unordered_map>
 #include <ranges>
 #include <span>
 #include <cassert>
+#include <meta>
 
 /*
 > = increases memory pointer, or moves the pointer to the right 1 block.
@@ -23,12 +23,13 @@ static constexpr auto CODE = std::to_array<char>({
     #embed "examples/hello_world.bf"
 });
 
-using jump_map_t = std::unordered_map<std::size_t, std::size_t>;
+using jump_map_t = std::array<std::size_t, sizeof(CODE)>;
 
-jump_map_t make_jump_map(std::span<const char> code) {
+consteval jump_map_t make_jump_map(std::span<const char> code) {
     jump_map_t map;
 
     std::vector<std::size_t> opening_stack{};
+    opening_stack.reserve(1 << 8);
 
     using namespace std::views;
     for (const auto [idx, c]: enumerate(code)) {
@@ -70,7 +71,7 @@ constexpr std::uint8_t read_data_pointer(const State& state) noexcept {
     return state.memory[state.data_pointer];
 }
 
-std::string run() {
+consteval auto compile() {
     std::string out;
     State state{};
     auto jump_map = make_jump_map(CODE);
@@ -97,10 +98,13 @@ std::string run() {
         ++state.instruction_pointer;
     }
 
-    return out;
+    return std::define_static_string(out);
 }
 
+// little compile time print trick from cppcon
+template<auto Result>
+[[deprecated]] void run() {}
+
 int main() {
-    std::print("{}", run());     
-    return 0;
+    std::print("{}", compile());
 }
