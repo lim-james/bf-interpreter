@@ -25,6 +25,7 @@ static constexpr auto CODE = std::to_array<char>({
 
 using jump_map_t = std::array<std::size_t, sizeof(CODE)>;
 
+[[nodiscard]]
 consteval jump_map_t make_jump_map(std::span<const char> code) {
     jump_map_t map;
 
@@ -72,7 +73,7 @@ constexpr std::uint8_t read_data_pointer(const State& state) noexcept {
 }
 
 consteval auto compile() {
-    std::string out;
+    std::string out; out.reserve(MEMORY_SIZE);
     State state{};
     auto jump_map = make_jump_map(CODE);
 
