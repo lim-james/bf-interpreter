@@ -72,6 +72,7 @@ constexpr std::uint8_t read_data_pointer(const State& state) noexcept {
     return state.memory[state.data_pointer];
 }
 
+[[nodiscard]]
 consteval auto compile() {
     std::string out; out.reserve(MEMORY_SIZE);
     State state{};
