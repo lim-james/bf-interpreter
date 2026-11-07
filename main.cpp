@@ -20,7 +20,7 @@
 */
 
 static constexpr auto CODE = std::to_array<char>({
-    #embed "examples/hello_world.bf"
+    #embed EMBED_FILE
 });
 
 using jump_map_t = std::array<std::size_t, sizeof(CODE)>;
@@ -76,7 +76,7 @@ constexpr std::uint8_t read_data_pointer(const State& state) noexcept {
 consteval auto compile() {
     std::string out; out.reserve(MEMORY_SIZE);
     State state{};
-    auto jump_map = make_jump_map(CODE);
+    const auto jump_map = make_jump_map(CODE);
 
     while (state.instruction_pointer < CODE.size()) {
         const char instruction = CODE[state.instruction_pointer];
